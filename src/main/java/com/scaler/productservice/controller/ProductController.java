@@ -1,12 +1,15 @@
 package com.scaler.productservice.controller;
 
-import com.scaler.productservice.dtos.CreateProductRequestDto;
-import com.scaler.productservice.dtos.CreateProductResponseDto;
+import com.scaler.productservice.dtos.ErrorResponseDto;
+import com.scaler.productservice.dtos.product.*;
 import com.scaler.productservice.models.Product;
 import com.scaler.productservice.service.ProductService;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 /** [RestController] is special annotation which will be make this class act like a controller
@@ -45,8 +48,17 @@ public class ProductController {
     }
 
     @GetMapping()
-    public String getProducts(){
-        return "Here is list of your product: ";
+    public GetAllProductsResponseDto getProducts(){
+        List<Product> products = productService.getAllProducts();
+        GetAllProductsResponseDto response = new GetAllProductsResponseDto();
+
+        List<GetProductDto> getProductResponseDtos = new ArrayList<>();
+
+        for (Product product: products) {
+            getProductResponseDtos.add(GetProductDto.from(product));
+        }
+        response.setProducts(getProductResponseDtos);
+        return response;
 
     }
 
@@ -60,4 +72,23 @@ public class ProductController {
     public String magicMethod(){
         return "Magic";
     }
+
+    @PatchMapping("{id}")
+    public PatchProductResponseDto patch(@PathVariable("id")Long id){
+        return  productService.updateProduct(id);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public String handleException(){
+        return "Something Went Wrong";
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ErrorResponseDto handleRunTimeException(RuntimeException e){
+       ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+       errorResponseDto.setMessage("Runtime Exception inside Product Controller"+e.getLocalizedMessage());
+       errorResponseDto.setStatusCode(234);
+       return  errorResponseDto;
+    }
+
 }

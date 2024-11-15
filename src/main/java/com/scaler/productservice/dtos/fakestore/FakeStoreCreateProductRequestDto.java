@@ -1,12 +1,11 @@
-package com.scaler.productservice.dtos;
+package com.scaler.productservice.dtos.fakestore;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class FakeStoreCreateProductResponseDto {
-   private long id;
+public class FakeStoreCreateProductRequestDto {
    private String title;
    private String description;
    private String image;

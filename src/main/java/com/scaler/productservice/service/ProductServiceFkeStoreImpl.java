@@ -1,10 +1,16 @@
 package com.scaler.productservice.service;
 
-import com.scaler.productservice.dtos.FakeStoreCreateProductResponseDto;
+import com.scaler.productservice.dtos.fakestore.FakeStoreCreateProductResponseDto;
+import com.scaler.productservice.dtos.product.GetProductDto;
+import com.scaler.productservice.dtos.product.PatchProductResponseDto;
 import com.scaler.productservice.models.Product;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Service("fakeStoreProductService")
 /* If we have more that one objects we are telling spring to use this as primary object
@@ -51,5 +57,27 @@ public class ProductServiceFkeStoreImpl implements ProductService{
 
 
         return product1;
+    }
+
+    @Override
+    public List<Product> getAllProducts() {
+
+        FakeStoreCreateProductResponseDto[] fakeStoreCreateProductResponseDtos= restTemplate.getForObject(
+                "https://fakestoreapi.com/products",
+                FakeStoreCreateProductResponseDto[].class);
+        List<FakeStoreCreateProductResponseDto> fakeStoreCreateProductResponseDtos1 = Arrays.stream(fakeStoreCreateProductResponseDtos).toList();
+
+        List<Product> products =new ArrayList<>();
+
+        for (FakeStoreCreateProductResponseDto fakeStoreCreateProductResponseDto: fakeStoreCreateProductResponseDtos1){
+           products.add(fakeStoreCreateProductResponseDto.toProduct());
+        }
+
+        return products;
+    }
+
+    @Override
+    public PatchProductResponseDto updateProduct(Long id) {
+        throw  new RuntimeException();
     }
 }

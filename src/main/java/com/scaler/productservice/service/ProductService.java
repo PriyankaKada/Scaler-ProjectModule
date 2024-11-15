@@ -1,7 +1,10 @@
 package com.scaler.productservice.service;
 
 
+import com.scaler.productservice.dtos.product.PatchProductResponseDto;
 import com.scaler.productservice.models.Product;
+
+import java.util.List;
 
 /*Service Should never take DTO object as parameter
 Service has business logic, and it may be used by multiple endpoints
@@ -12,4 +15,7 @@ Service has business logic, and it may be used by multiple endpoints
 * */
 public interface ProductService {
      Product createProduct(Product product);
+     List<Product> getAllProducts();
+
+     PatchProductResponseDto updateProduct(Long id);
 }
