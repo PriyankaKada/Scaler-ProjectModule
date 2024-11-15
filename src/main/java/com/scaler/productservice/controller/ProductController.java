@@ -63,8 +63,10 @@ public class ProductController {
     }
 
     @GetMapping("{id}")
-    public String getSingleProducts(@PathVariable("id") Long productId){
-        return  "Here is your Product "+productId;
+    public GetProductDto getSingleProducts(@PathVariable("id") Long productId){
+        Product p = productService.getSingleProduct(productId);
+
+        return GetProductDto.from(p);
 
     }
 

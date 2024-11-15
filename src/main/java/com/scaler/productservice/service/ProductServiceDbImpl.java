@@ -23,4 +23,9 @@ public class ProductServiceDbImpl implements ProductService{
     public PatchProductResponseDto updateProduct(Long id) {
         return null;
     }
+
+    @Override
+    public Product getSingleProduct(Long productId) {
+        return null;
+    }
 }

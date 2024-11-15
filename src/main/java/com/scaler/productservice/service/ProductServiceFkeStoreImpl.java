@@ -80,4 +80,22 @@ public class ProductServiceFkeStoreImpl implements ProductService{
     public PatchProductResponseDto updateProduct(Long id) {
         throw  new RuntimeException();
     }
+
+    @Override
+    public Product getSingleProduct(Long productId) {
+        GetProductDto product = restTemplate.getForObject("https://fakestoreapi.com/products/"+productId,
+                GetProductDto.class);
+
+        Product p = new Product();
+        assert product != null;
+        p.setDescription(product.getDescription());
+        p.setId(product.getId());
+        p.setImageUrl(product.getImageUrl());
+        p.setTitle(product.getTitle());
+        p.setCategory(product.getCategory());
+        p.setPrice(product.getPrice());
+
+
+        return p;
+    }
 }

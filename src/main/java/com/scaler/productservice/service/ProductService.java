@@ -18,4 +18,6 @@ public interface ProductService {
      List<Product> getAllProducts();
 
      PatchProductResponseDto updateProduct(Long id);
+
+     Product getSingleProduct(Long productId);
 }
