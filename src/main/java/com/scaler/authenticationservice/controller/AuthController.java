@@ -11,10 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -53,13 +50,22 @@ public class AuthController {
         {
             String token = authService.login(loginRequestDto.getEmail(),loginRequestDto.getPassword());
 
-            loginResponseDto.setRequestStatus(RequestStatus.SUCCESS);
+            if(authService.validate(token)) {
 
-            MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-            headers.add("AUTH_Token",token);
-            return new ResponseEntity<>(
-                    loginResponseDto,headers, HttpStatus.OK
-            );
+                loginResponseDto.setRequestStatus(RequestStatus.SUCCESS);
+
+                MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+                headers.add("AUTH_Token", token);
+
+                return new ResponseEntity<>(
+                        loginResponseDto, headers, HttpStatus.OK
+                );
+            }else {
+                loginResponseDto.setRequestStatus(RequestStatus.FAILED);
+                return new ResponseEntity<>(
+                        loginResponseDto, HttpStatus.BAD_REQUEST
+                );
+            }
         }catch (UsernameNotFoundException | WrongPasswordException e){
             loginResponseDto.setRequestStatus(RequestStatus.FAILED);
             return new ResponseEntity<>(
