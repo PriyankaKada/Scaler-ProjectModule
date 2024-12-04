@@ -1,9 +1,12 @@
 package com.scaler.authenticationservice.controller;
 
 import com.scaler.authenticationservice.dto.*;
+import com.scaler.authenticationservice.exceptions.WrongPasswordException;
+import com.scaler.authenticationservice.model.User;
 import com.scaler.authenticationservice.services.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.LinkedMultiValueMap;
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -41,17 +46,28 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> signUp(@RequestBody LoginRequestDto loginRequestDto){
-        String token = authService.login(loginRequestDto.getEmail(),loginRequestDto.getPassword());
-
+    public ResponseEntity<LoginResponseDto> signUp(@RequestBody LoginRequestDto loginRequestDto) throws WrongPasswordException {
         LoginResponseDto loginResponseDto = new LoginResponseDto();
-        loginResponseDto.setRequestStatus(RequestStatus.SUCCESS);
 
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add("AUTH_Token",token);
-        return new ResponseEntity<>(
-                loginResponseDto,headers, HttpStatus.OK
-        );
+        try
+        {
+            String token = authService.login(loginRequestDto.getEmail(),loginRequestDto.getPassword());
+
+            loginResponseDto.setRequestStatus(RequestStatus.SUCCESS);
+
+            MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+            headers.add("AUTH_Token",token);
+            return new ResponseEntity<>(
+                    loginResponseDto,headers, HttpStatus.OK
+            );
+        }catch (UsernameNotFoundException | WrongPasswordException e){
+            loginResponseDto.setRequestStatus(RequestStatus.FAILED);
+            return new ResponseEntity<>(
+                    loginResponseDto, HttpStatus.BAD_REQUEST
+            );
+
+        }
+
 
     }
 

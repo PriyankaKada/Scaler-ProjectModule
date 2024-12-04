@@ -1,10 +1,14 @@
 package com.scaler.authenticationservice.services;
 
 import com.scaler.authenticationservice.exceptions.UserAlreadyExistException;
+import com.scaler.authenticationservice.exceptions.WrongPasswordException;
 import com.scaler.authenticationservice.model.User;
 import com.scaler.authenticationservice.repository.UserRepository;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 
@@ -30,7 +34,23 @@ public class AuthService {
         }
         return true;
     }
-    public String login(String email,String password){
-        return "token";
+    public String login(String email,String password) throws WrongPasswordException {
+
+        Optional<User> userOptional = userRepository.findByEmail(email);
+
+        if (userOptional.isEmpty()){
+            throw new UsernameNotFoundException("User With email "+email+" does not exist ");
+        }
+       boolean matches= bCryptPasswordEncoder.matches(
+                password,
+                userOptional.get().getPassword()
+        );
+        if (matches){
+            return "token";
+        }else{
+            throw  new WrongPasswordException("Entered Password is wrong");
+        }
+
+//        return "token";
     }
 }
